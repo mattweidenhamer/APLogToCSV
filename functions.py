@@ -105,6 +105,7 @@ def parse_item_line(item_line: str):
     sender = sender.strip()
     item = item.strip()
     return {
+        "timestamp": timestamp,
         "team": team,
         "item": item,
         "location": location,
