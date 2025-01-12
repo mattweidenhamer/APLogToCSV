@@ -122,12 +122,14 @@ def parse_log(input_location: str, output_location:str, file_type:str) -> None:
             output_location_player = output_location.replace(".csv", "_player.csv")
         player_output_file = open(output_location_player, "w", newline='', encoding="UTF-8")
         player_output_writer = csv.DictWriter(player_output_file, fieldnames=PLAYER_FIELDNAMES)
+        player_output_writer.writeheader()
     if file_type in ["both", "item"]:
         output_location_item = output_location
         if file_type == "both":
             output_location_item = output_location.replace(".csv", "_item.csv")
         item_output_file = open(output_location_item, "w", newline='', encoding="UTF-8")
         item_output_writer = csv.DictWriter(item_output_file, fieldnames=ITEM_FIELDNAMES)
+        item_output_writer.writeheader()
 
     output_counter = 0
    
