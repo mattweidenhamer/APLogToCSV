@@ -1,29 +1,22 @@
-# Item Send CSV file format:
-# Timestamp: When the item was sent
-# Team: The team that sent the item
-# Item: The actual name of the item sent
-# Location: Where the item was found.
-# ItemType: Progression, useful, filler, or trap. Will need to be cross-referenced based on the item name in the files.
-# Sender: Who sent the item
-# Receiver: Who received the item
-# example input line: [2024-11-29 06:00:06,786]: (Team #1) Nillsanity sent Gunther <3 to Tair (Level 1 Mining)
-
-
-
-
 import csv
 from ast import Tuple, parse
 
-
-def preprocess_line(line: str) -> str:
+def process_line(line: str) -> str:
     # Filters unneccesary lines from the log file.
 
     # Ignore the line if it isn't timestamped (such as commands)
     if not line.startswith("["):
         return None
     
-    # return the line if it has a valid timestamp.
-    return line
+    if "Notice" in line:
+        return parse_notice(line)
+    
+    # This might be too broad, but it should catch all item send lines.
+    if "sent" in line:
+        return parse_item_line(line)
+    
+    print(f"Unhandled line: {line}")
+    return None
 
 def split_timestamp(line:str) -> Tuple[str, str]:
     # Splits the timestamp from the rest of the line.
@@ -103,19 +96,6 @@ def parse_item_line(item_line: str):
         "receiver": receiver
     }
 
-
-
-
 def parse_log(input_location: str, output_location:str) -> None:
     # Takes an Archipelago log file and converts it into a CSV for analysis.
     pass
-
-
-def prompt_for_file() -> None:
-    # Prompts the user for the log file they would like to parse.
-    file_location = input("Please enter the location of the log file you would like to parse: ")
-    file_output = input("Please enter the name of the file to output the CSV to: ")
-    parse_log(file_location, file_output)
-
-if __name__ == "__main__":
-    prompt_for_file()
