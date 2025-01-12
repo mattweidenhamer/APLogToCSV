@@ -2,3 +2,4 @@ logs/
 input/*
 items/*
 output/*
+pycache
