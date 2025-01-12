@@ -20,7 +20,7 @@ def process_line(line: str) -> str:
     if "(Team " in line:
         return parse_item_line(line)
     
-    print(f"Unhandled line: {line}")
+    unhandled_lines.append(line)    
     return None
 
 def split_timestamp(line:str) -> Tuple:
@@ -61,7 +61,7 @@ def parse_notice(notice: str):
     elif " has left " in notice:
         player, game = notice.split(" has left ", 1)
     else: 
-        print(f"Unhandled notice: {notice}")
+        print(f"Unhandled line in notice phase: {notice}")
         unhandled_lines.append(notice)
         return None
 
@@ -128,6 +128,8 @@ def parse_log(input_location: str, output_location:str, file_type:str) -> None:
             output_location_item = output_location.replace(".csv", "_item.csv")
         item_output_file = open(output_location_item, "w", newline='', encoding="UTF-8")
         item_output_writer = csv.DictWriter(item_output_file, fieldnames=ITEM_FIELDNAMES)
+
+    output_counter = 0
    
     with open(input_location, "r") as f:
         for line in f:
@@ -136,10 +138,12 @@ def parse_log(input_location: str, output_location:str, file_type:str) -> None:
                 continue
             if "event" in parsed_line:
                 player_output_writer.writerow(parsed_line)
+                output_counter += 1
             elif "item" in parsed_line:
                 item_output_writer.writerow(parsed_line)
+                output_counter += 1
             else:
-                print(f"Unhandled line: {parsed_line}")
+                print(f"Unhandled line in parsing phase: {parsed_line}")
                 unhandled_lines.append(parsed_line)
 
     if player_output_file is not None:
@@ -147,6 +151,7 @@ def parse_log(input_location: str, output_location:str, file_type:str) -> None:
     if item_output_file is not None:
         item_output_file.close()
 
+    print(f"Successfully wrote {output_counter} lines to associated file(s).")
     if len(unhandled_lines) > 0:
         print("Some lines were unhandled. Unhandled lines:")
         for line in unhandled_lines:
