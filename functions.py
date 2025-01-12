@@ -18,9 +18,9 @@ def process_line(line: str) -> str:
     print(f"Unhandled line: {line}")
     return None
 
-def split_timestamp(line:str) -> Tuple[str, str]:
+def split_timestamp(line:str) -> Tuple:
     # Splits the timestamp from the rest of the line.
-    timestamp, lineWithoutStamp = line.split("]:  ", 1)
+    timestamp, lineWithoutStamp = line.split("]: ", 1)
 
     # Chop off the leading bracket on time stamp
     timestamp = timestamp[1:]

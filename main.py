@@ -8,7 +8,6 @@
 # Receiver: Who received the item
 # example input line: [2024-11-29 06:00:06,786]: (Team #1) Nillsanity sent Gunther <3 to Tair (Level 1 Mining)
 
-import csv
 from functions import parse_log
 
 def prompt_for_file() -> None:
