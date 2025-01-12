@@ -4,12 +4,12 @@ from ast import Tuple
 ITEM_FIELDNAMES = ["timestamp", "team", "item", "location", "sender", "receiver"]
 PLAYER_FIELDNAMES = ["timestamp", "event", "player", "player_team"]
 
+unhandled_lines = []
+
 def process_line(line: str) -> str:
     # Filters unneccesary lines from the log file.
 
     # Ignore the line if it isn't timestamped (such as commands)
-    # Debug
-    print(line)
     if not line.startswith("["):
         return None
     
@@ -62,6 +62,7 @@ def parse_notice(notice: str):
         player, game = notice.split(" has left ", 1)
     else: 
         print(f"Unhandled notice: {notice}")
+        unhandled_lines.append(notice)
         return None
 
     player, team = player.split(" (Team ", 1)
@@ -109,12 +110,12 @@ def parse_item_line(item_line: str):
 
 def parse_log(input_location: str, output_location:str, file_type:str) -> None:
     # Takes an Archipelago log file and converts it into a CSV for analysis.
-    # TODO rewrite so that partial exports still occur if the program fails.
 
     player_output_writer = None
     item_output_writer = None
     player_output_file = None
     item_output_file = None
+
     if file_type in ["both", "player"]:
         output_location_player = output_location
         if file_type == "both":
@@ -139,8 +140,14 @@ def parse_log(input_location: str, output_location:str, file_type:str) -> None:
                 item_output_writer.writerow(parsed_line)
             else:
                 print(f"Unhandled line: {parsed_line}")
+                unhandled_lines.append(parsed_line)
 
     if player_output_file is not None:
         player_output_file.close()
     if item_output_file is not None:
         item_output_file.close()
+
+    if len(unhandled_lines) > 0:
+        print("Some lines were unhandled. Unhandled lines:")
+        for line in unhandled_lines:
+            print(line)
