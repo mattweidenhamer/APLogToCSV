@@ -17,7 +17,7 @@ def process_line(line: str) -> str:
         return parse_notice(line)
     
     # This might be too broad, but it should catch all item send lines.
-    if "sent" in line:
+    if "(Team " in line:
         return parse_item_line(line)
     
     print(f"Unhandled line: {line}")
@@ -113,25 +113,20 @@ def parse_log(input_location: str, output_location:str, file_type:str) -> None:
 
     player_output_writer = None
     item_output_writer = None
+    player_output_file = None
+    item_output_file = None
     if file_type in ["both", "player"]:
         output_location_player = output_location
-        player_output_writer = csv.writer(open(output_location_player, "w", newline="", encoding="UTF-8"), fieldnames=PLAYER_FIELDNAMES)
+        if file_type == "both":
+            output_location_player = output_location.replace(".csv", "_player.csv")
+        player_output_file = open(output_location_player, "w", newline='', encoding="UTF-8")
+        player_output_writer = csv.DictWriter(player_output_file, fieldnames=PLAYER_FIELDNAMES)
     if file_type in ["both", "item"]:
         output_location_item = output_location
-        item_output_writer = csv.writer(open(output_location_item, "w", newline="", encoding="UTF-8"), fieldnames=ITEM_FIELDNAMES)
-    
-
-    if file_type == "both":
-        output_location_item = output_location.replace(".csv", "_item.csv")
-        output_location_player = output_location.replace(".csv", "_player.csv")
-        player_output_writer = csv.writer(open(output_location_player, "w", newline="", encoding="UTF-8"), fieldnames=PLAYER_FIELDNAMES)
-        item_output_writer = csv.writer(open(output_location_item, "w", newline="", encoding="UTF-8"), fieldnames=ITEM_FIELDNAMES)
-    elif file_type == "item":
-        output_location_item = output_location
-        item_output_writer = csv.writer(open(output_location_item, "w", newline="", encoding="UTF-8"), fieldnames=ITEM_FIELDNAMES)
-    elif file_type == "player":
-        output_location_player = output_location
-        player_output_writer = csv.writer(open(output_location_player, "w", newline="", encoding="UTF-8"), fieldnames=PLAYER_FIELDNAMES)
+        if file_type == "both":
+            output_location_item = output_location.replace(".csv", "_item.csv")
+        item_output_file = open(output_location_item, "w", newline='', encoding="UTF-8")
+        item_output_writer = csv.DictWriter(item_output_file, fieldnames=ITEM_FIELDNAMES)
    
     with open(input_location, "r") as f:
         for line in f:
@@ -145,7 +140,7 @@ def parse_log(input_location: str, output_location:str, file_type:str) -> None:
             else:
                 print(f"Unhandled line: {parsed_line}")
 
-    if player_output_writer is not None:
-        player_output_writer.close()
-    if item_output_writer is not None:
-        item_output_writer.close()
+    if player_output_file is not None:
+        player_output_file.close()
+    if item_output_file is not None:
+        item_output_file.close()
