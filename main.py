@@ -20,6 +20,7 @@ def prompt_for_file() -> None:
         if os.path.isfile(file_location):
             break
         elif os.path.isfile(path.join("input", file_location)):
+            file_location = path.join("input", file_location)
             break
         print("File path not found. Please try again.")
     while(True):
