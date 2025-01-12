@@ -53,7 +53,13 @@ def parse_notice(notice: str):
     notice = notice.split(":", 1)[1]
 
     # Divide the playing half and the notice half, to avoid accidental misinterpretation.
-    player, game = notice.split(" playing ", 1)
+    if " playing " in notice:
+        player, game = notice.split(" playing ", 1)
+    elif " has left " in notice:
+        player, game = notice.split(" has left ", 1)
+    else: 
+        print(f"Unhandled notice: {notice}")
+        return None
 
     player, team = player.split(" (Team ", 1)
     player.strip()
