@@ -1,6 +1,9 @@
 import csv
 from ast import Tuple
 
+ITEM_FIELDNAMES = ["timestamp", "team", "item", "location", "sender", "receiver"]
+PLAYER_FIELDNAMES = ["timestamp", "event", "player", "player_team"]
+
 def process_line(line: str) -> str:
     # Filters unneccesary lines from the log file.
 
@@ -106,29 +109,48 @@ def parse_item_line(item_line: str):
 
 def parse_log(input_location: str, output_location:str, file_type:str) -> None:
     # Takes an Archipelago log file and converts it into a CSV for analysis.
-    with open(input_location, "r") as f:
-        lines = f.readlines()
-    item_csv = []
-    player_csv = []
+    # TODO rewrite so that partial exports still occur if the program fails.
 
-    for line in lines:
-        parsed_line = process_line(line)
-        if parsed_line is None:
-            continue
-        if "event" in parsed_line:
-            player_csv.append(parsed_line)
-        else:
-            item_csv.append(parsed_line)
+    player_output_writer = None
+    item_output_writer = None
+    if file_type in ["both", "player"]:
+        output_location_player = output_location
+        player_output_writer = csv.writer(open(output_location_player, "w", newline="", encoding="UTF-8"), fieldnames=PLAYER_FIELDNAMES)
+    if file_type in ["both", "item"]:
+        output_location_item = output_location
+        item_output_writer = csv.writer(open(output_location_item, "w", newline="", encoding="UTF-8"), fieldnames=ITEM_FIELDNAMES)
+        
+
 
     if file_type == "both":
         output_location_item = output_location.replace(".csv", "_item.csv")
         output_location_player = output_location.replace(".csv", "_player.csv")
-        write_output(output_location_item, item_csv, ["timestamp", "team", "item", "location", "sender", "receiver"])
-        write_output(output_location_player, player_csv, ["timestamp", "event", "player", "player_team"])
+        player_output_writer = csv.writer(open(output_location_player, "w", newline="", encoding="UTF-8"), fieldnames=PLAYER_FIELDNAMES)
+        item_output_writer = csv.writer(open(output_location_item, "w", newline="", encoding="UTF-8"), fieldnames=ITEM_FIELDNAMES)
     elif file_type == "item":
-        write_output(output_location, item_csv, ["timestamp", "team", "item", "location", "sender", "receiver"])
+        output_location_item = output_location
+        item_output_writer = csv.writer(open(output_location_item, "w", newline="", encoding="UTF-8"), fieldnames=ITEM_FIELDNAMES)
     elif file_type == "player":
-        write_output(output_location, player_csv, ["timestamp", "event", "player", "player_team"])
+        output_location_player = output_location
+        player_output_writer = csv.writer(open(output_location_player, "w", newline="", encoding="UTF-8"), fieldnames=PLAYER_FIELDNAMES)
+   
+    with open(input_location, "r") as f:
+        for line in f:
+            parsed_line = process_line(line)
+            if parsed_line is None:
+                continue
+            if "event" in parsed_line:
+                player_output_writer.writerow(parsed_line)
+            elif "item" in parsed_line:
+                item_output_writer.writerow(parsed_line)
+            else:
+                print(f"Unhandled line: {parsed_line}")
+
+    if player_output_writer is not None:
+        player_output_writer.close()
+    if item_output_writer is not None:
+        item_output_writer.close()
+        
 
 def write_output(output_location: str, data: list, fieldnames: list) -> None:
     with open(output_location, "w", newline="", encoding="UTF-8") as f:
@@ -137,5 +159,3 @@ def write_output(output_location: str, data: list, fieldnames: list) -> None:
 
         for line in data:
             writer.writerow(line)
-
-    
