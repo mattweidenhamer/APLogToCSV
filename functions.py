@@ -70,8 +70,6 @@ def parse_notice(notice: str):
     team = team[:-1]
     team = team.strip()
 
-    
-
     # The event is either join or leave.
     event = "join" if "has joined" in game else "leave"
     

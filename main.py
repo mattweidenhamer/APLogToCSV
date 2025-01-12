@@ -8,24 +8,20 @@
 # Receiver: Who received the item
 # example input line: [2024-11-29 06:00:06,786]: (Team #1) Nillsanity sent Gunther <3 to Tair (Level 1 Mining)
 
+from genericpath import isfile
 from functions import parse_log
+import os
 from os import path
 
 def prompt_for_file() -> None:
     # Prompts the user for the log file they would like to parse.
     while(True):
         file_location = input("Please enter the location of the log file you would like to parse: ")
-        try:
-            with open(file_location, "r") as f:
-                break
-        except FileNotFoundError:
-            try:
-                with open(path.join("input", file_location), "r") as f:
-                    file_location = path.join("input", file_location)
-                    break
-            except FileNotFoundError:
-                print("File path not found. Please try again.")
-
+        if os.path.isfile(file_location):
+            break
+        elif os.path.isfile(path.join("input", file_location)):
+            break
+        print("File path not found. Please try again.")
     while(True):
         file_output = input("Please enter the name of the file to output the CSV to: ")
         if not file_output.endswith(".csv"):
