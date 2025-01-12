@@ -84,6 +84,7 @@ def parse_item_line(item_line: str):
     # Parses an item send line into a set of CSV values.
     # Example input line:
     # (Team #1) Nillsanity sent Gunther <3 to Tair (Level 1 Mining)
+    timestamp, item_line = split_timestamp(item_line)
     team, item = item_line.split(")", 1)
     team = team[1:]
 
