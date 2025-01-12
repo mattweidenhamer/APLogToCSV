@@ -66,9 +66,11 @@ def parse_notice(notice: str):
         return None
 
     player, team = player.split(" (Team ", 1)
-    player.strip()
+    player = player.strip()
     team = team[:-1]
-    team.strip()
+    team = team.strip()
+
+    
 
     # The event is either join or leave.
     event = "join" if "has joined" in game else "leave"
@@ -94,12 +96,13 @@ def parse_item_line(item_line: str):
     # The parenthesis at the end contains the location.
     # TODO: Is there a way to have this not break for locations with parenthesis?
     item, location = item.rsplit("(", 1)
-    location = location[:-1]
+    location = location[:-2]
 
     # The receiver is anything after the "to" keyword.
     item, receiver = item.rsplit(" to ", 1)
 
     # The item should be the only thing left.
+    sender = sender.strip()
     item = item.strip()
     return {
         "team": team,
