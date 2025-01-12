@@ -21,10 +21,26 @@ def prompt_for_file() -> None:
         except FileNotFoundError:
             print("File path not found. Please try again.")
 
-    file_output = input("Please enter the name of the file to output the CSV to: ")
-    if not file_output.endswith(".csv"):
-        file_output += ".csv"
-    parse_log(file_location, file_output)
+    while(True):
+        file_output = input("Please enter the name of the file to output the CSV to: ")
+        if not file_output.endswith(".csv"):
+            file_output += ".csv"
+        try:
+            with open(file_output, "w", newline="") as f:
+                break
+        except FileNotFoundError:
+            print("File path not found. Please try again.")
+        except PermissionError:
+            print("Permission denied. Please try again.")
+
+    while(True):
+        file_type = input("Parse item sends or player actions? (item/player/both):")
+        if file_type.lower() in ["item", "player", "both"]:
+            break
+        else:
+            print("Invalid input. Please try again.")
+
+    parse_log(file_location, file_output, file_type.lower())
 
 if __name__ == "__main__":
     prompt_for_file()
