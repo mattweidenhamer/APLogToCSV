@@ -119,8 +119,7 @@ def parse_log(input_location: str, output_location:str, file_type:str) -> None:
     if file_type in ["both", "item"]:
         output_location_item = output_location
         item_output_writer = csv.writer(open(output_location_item, "w", newline="", encoding="UTF-8"), fieldnames=ITEM_FIELDNAMES)
-        
-
+    
 
     if file_type == "both":
         output_location_item = output_location.replace(".csv", "_item.csv")
@@ -150,12 +149,3 @@ def parse_log(input_location: str, output_location:str, file_type:str) -> None:
         player_output_writer.close()
     if item_output_writer is not None:
         item_output_writer.close()
-        
-
-def write_output(output_location: str, data: list, fieldnames: list) -> None:
-    with open(output_location, "w", newline="", encoding="UTF-8") as f:
-        writer = csv.DictWriter(f, fieldnames=fieldnames)
-        writer.writeheader()
-
-        for line in data:
-            writer.writerow(line)
