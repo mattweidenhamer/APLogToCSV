@@ -1,5 +1,5 @@
 import csv
-from ast import Tuple, parse
+from ast import Tuple
 
 def process_line(line: str) -> str:
     # Filters unneccesary lines from the log file.
@@ -96,6 +96,38 @@ def parse_item_line(item_line: str):
         "receiver": receiver
     }
 
-def parse_log(input_location: str, output_location:str) -> None:
+def parse_log(input_location: str, output_location:str, file_type:str) -> None:
     # Takes an Archipelago log file and converts it into a CSV for analysis.
-    pass
+    with open(input_location, "r") as f:
+        lines = f.readlines()
+    item_csv = []
+    player_csv = []
+
+    for line in lines:
+        parsed_line = process_line(line)
+        if parsed_line is None:
+            continue
+        if "event" in parsed_line:
+            player_csv.append(parsed_line)
+        else:
+            item_csv.append(parsed_line)
+
+    if file_type == "both":
+        output_location_item = output_location.replace(".csv", "_item.csv")
+        output_location_player = output_location.replace(".csv", "_player.csv")
+        write_output(output_location_item, item_csv, ["timestamp", "team", "item", "location", "sender", "receiver"])
+        write_output(output_location_player, player_csv, ["timestamp", "event", "player", "player_team"])
+    elif file_type == "item":
+        write_output(output_location, item_csv, ["timestamp", "team", "item", "location", "sender", "receiver"])
+    elif file_type == "player":
+        write_output(output_location, player_csv, ["timestamp", "event", "player", "player_team"])
+
+def write_output(output_location: str, data: list, fieldnames: list) -> None:
+    with open(output_location, "w", newline="", encoding="UTF-8") as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
+
+        for line in data:
+            writer.writerow(line)
+
+    
