@@ -5,6 +5,8 @@ def process_line(line: str) -> str:
     # Filters unneccesary lines from the log file.
 
     # Ignore the line if it isn't timestamped (such as commands)
+    # Debug
+    print(line)
     if not line.startswith("["):
         return None
     

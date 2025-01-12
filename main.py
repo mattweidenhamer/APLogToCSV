@@ -9,6 +9,7 @@
 # example input line: [2024-11-29 06:00:06,786]: (Team #1) Nillsanity sent Gunther <3 to Tair (Level 1 Mining)
 
 from functions import parse_log
+from os import path
 
 def prompt_for_file() -> None:
     # Prompts the user for the log file they would like to parse.
@@ -18,12 +19,20 @@ def prompt_for_file() -> None:
             with open(file_location, "r") as f:
                 break
         except FileNotFoundError:
-            print("File path not found. Please try again.")
+            try:
+                with open(path.join("input", file_location), "r") as f:
+                    file_location = path.join("input", file_location)
+                    break
+            except FileNotFoundError:
+                print("File path not found. Please try again.")
 
     while(True):
         file_output = input("Please enter the name of the file to output the CSV to: ")
         if not file_output.endswith(".csv"):
             file_output += ".csv"
+        # If a directory isn't specified, default to the output directory.
+        if "/" not in file_output and "\\" not in file_output:
+            file_output = path.join("output", file_output)
         try:
             with open(file_output, "w", newline="") as f:
                 break
