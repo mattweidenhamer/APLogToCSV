@@ -3,3 +3,4 @@ input/*
 items/*
 output/*
 pycache
+.venv
