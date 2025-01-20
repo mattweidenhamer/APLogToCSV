@@ -8,3 +8,4 @@ How to use:
 
 Future plans:
 * Make easier to automate by adding a "use defaults" option.
+* Add an additional column for item lookups based on their type. Would require an item CSV from the archipelago world.

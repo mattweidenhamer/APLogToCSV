@@ -1,8 +1,8 @@
 import csv
 from ast import Tuple
 
-ITEM_FIELDNAMES = ["timestamp", "team", "item", "location", "sender", "receiver"]
-PLAYER_FIELDNAMES = ["timestamp", "event", "player", "player_team"]
+ITEM_FIELDNAMES = ["timestamp", "date", "time", "team", "item", "location", "sender", "receiver"]
+PLAYER_FIELDNAMES = ["timestamp", "date", "time", "event", "player", "player_team"]
 
 unhandled_lines = []
 
@@ -29,7 +29,9 @@ def split_timestamp(line:str) -> Tuple:
 
     # Chop off the leading bracket on time stamp
     timestamp = timestamp[1:]
-    return timestamp, lineWithoutStamp
+    date, time = timestamp.split(" ", 1)
+
+    return timestamp, date, time, lineWithoutStamp
 
 def parse_notice(notice: str):
     # Parses a notice line into a set of CSV values.
@@ -50,7 +52,7 @@ def parse_notice(notice: str):
         return None
     
     # Split the timestamp from the rest of the line.
-    timestamp, notice = split_timestamp(notice)
+    timestamp, date, time, notice = split_timestamp(notice)
 
     # Remove the notice from the line.
     notice = notice.split(":", 1)[1]
@@ -75,6 +77,8 @@ def parse_notice(notice: str):
     
     return {
         "timestamp": timestamp,
+        "date": date,
+        "time": time,
         "event": event,
         "player": player,
         "player_team": team,
@@ -84,7 +88,7 @@ def parse_item_line(item_line: str):
     # Parses an item send line into a set of CSV values.
     # Example input line:
     # (Team #1) Nillsanity sent Gunther <3 to Tair (Level 1 Mining)
-    timestamp, item_line = split_timestamp(item_line)
+    timestamp, date, time, item_line = split_timestamp(item_line)
     team, item = item_line.split(")", 1)
     team = team[1:]
 
@@ -104,6 +108,8 @@ def parse_item_line(item_line: str):
     item = item.strip()
     return {
         "timestamp": timestamp,
+        "date": date,
+        "time": time,
         "team": team,
         "item": item,
         "location": location,
